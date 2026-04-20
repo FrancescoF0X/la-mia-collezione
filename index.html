@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Mia Collezione</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23FFD166'/%3E%3Cpolygon points='90,28 158,62 158,128 90,162 22,128 22,62' fill='%23FFE099' stroke='%23E6A800' stroke-width='3'/%3E%3Cpolygon points='90,28 158,62 90,95 22,62' fill='%23FFF0CC' stroke='%23E6A800' stroke-width='3'/%3E%3Cline x1='90' y1='95' x2='90' y2='162' stroke='%23E6A800' stroke-width='3'/%3E%3Cline x1='57' y1='45' x2='125' y2='78' stroke='%23CC8800' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Collezione">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface2: #f5f5f7;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #a1a1a6;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --accent-light: #e8f0fe;
+    --red: #ff3b30;
+    --red-light: #fff0ee;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface2: #2c2c2e;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f5f7;
+      --text-secondary: #98989d;
+      --text-tertiary: #636366;
+      --accent: #2997ff;
+      --accent-hover: #48aaff;
+      --accent-light: rgba(41,151,255,0.12);
+      --red: #ff453a;
+      --red-light: rgba(255,69,58,0.12);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+    }
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 24px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .header { background: rgba(28,28,30,0.72); }
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+  .header-stats {
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: var(--surface2);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .btn-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-add:hover { background: var(--accent-hover); }
+  .btn-add:active { transform: scale(0.97); }
+  .btn-add svg { flex-shrink: 0; }
+
+  /* FILTERS */
+  .filters-bar {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    background: var(--surface);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .search-wrap {
+    flex: 1;
+    min-width: 160px;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 7px 14px 7px 36px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input::placeholder { color: var(--text-tertiary); }
+  .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+
+  /* GRID */
+  .grid {
+    max-width: 1200px;
+    margin: 20px auto 48px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    border: 0.5px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* PHOTO AREA */
+  .card-photos {
+    position: relative;
+    background: var(--surface2);
+    height: 200px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .photos-scroll {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .photos-scroll::-webkit-scrollbar { display: none; }
+  .photo-item {
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+  }
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-del-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    line-height: 1;
+  }
+  .photo-item:hover .photo-del-btn { opacity: 1; }
+  .photo-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+  .photo-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transition: background 0.15s;
+  }
+  .photo-dot.active { background: white; }
+  .empty-photo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+  .add-photo-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    border: none;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    line-height: 1;
+  }
+  .add-photo-btn:hover { background: rgba(0,0,0,0.65); }
+  .add-photo-btn:active { transform: scale(0.92); }
+  .category-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+  }
+
+  /* CARD BODY */
+  .card-body {
+    padding: 16px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .field-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .field-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 72px;
+    flex-shrink: 0;
+  }
+  .field-value {
+    font-size: 14px;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    flex: 1;
+    min-width: 0;
+    transition: background 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .field-value:hover { background: var(--surface2); }
+  .field-value:focus { background: var(--surface2); box-shadow: 0 0 0 2px var(--accent); }
+  .field-name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    padding: 2px 6px;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    border-radius: var(--radius-sm);
+    width: 100%;
+    outline: none;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .field-name:hover { background: var(--surface2); }
+  .field-name:focus { background: var(--surface2); box-shadow: 0 0 0 2px var(--accent); }
+  .field-qty {
+    width: 60px;
+  }
+
+  /* CARD FOOTER */
+  .card-footer {
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 0.5px solid var(--border);
+  }
+  .cat-selector {
+    background: transparent;
+    border: 0.5px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: var(--font);
+    color: var(--text-secondary);
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 22px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s;
+  }
+  .cat-selector:hover { border-color: var(--accent); }
+  .cat-selector:focus { box-shadow: 0 0 0 2px rgba(0,113,227,0.15); }
+  .btn-delete {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font);
+  }
+  .btn-delete:hover { color: var(--red); background: var(--red-light); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 16px;
+    text-align: center;
+  }
+  .empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    background: var(--surface);
+    border: 0.5px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+  .empty-title { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+  .empty-sub { font-size: 15px; color: var(--text-secondary); max-width: 300px; line-height: 1.5; }
+  .btn-empty-add {
+    margin-top: 8px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-empty-add:hover { background: var(--accent-hover); }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px;
+    animation: fade-in 0.2s ease;
+  }
+  @media (min-width: 500px) {
+    .modal-backdrop { align-items: center; }
+  }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow-lg);
+    animation: slide-up 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes slide-up {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.3px; }
+  .modal-field { margin-bottom: 14px; }
+  .modal-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+  .modal-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 15px;
+    font-family: var(--font);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-cancel {
+    flex: 1;
+    background: var(--surface2);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 11px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--font);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-cancel:hover { background: var(--bg); }
+  .btn-confirm {
+    flex: 1.5;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 11px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--font);
+    color: white;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-confirm:hover { background: var(--accent-hover); }
+
+  input[type="file"] { display: none; }
+
+  .save-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 300;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0;
+    white-space: nowrap;
+  }
+  .save-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 3L25 8.5V19.5L14 25L3 19.5V8.5L14 3Z" fill="#FFD166" stroke="#E6A800" stroke-width="1"/>
+        <path d="M14 3L25 8.5L14 14L3 8.5L14 3Z" fill="#FFE099" stroke="#E6A800" stroke-width="1"/>
+        <path d="M14 14V25" stroke="#E6A800" stroke-width="1"/>
+        <path d="M9 5.8L20 11.2" stroke="#E6A800" stroke-width="1" stroke-linecap="round"/>
+        <path d="M11 13.2V19.5L14 21.2" stroke="#CC8800" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+      </svg>
+      <span class="header-title">La Mia Collezione</span>
+    </div>
+    <span class="header-stats" id="stats-label">0 oggetti</span>
+    <button class="btn-add" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+      Aggiungi
+    </button>
+  </div>
+</header>
+
+<div class="filters-bar">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input class="search-input" type="text" placeholder="Cerca nella collezione…" id="search-input" oninput="renderItems()">
+  </div>
+  <button class="filter-chip active" data-cat="all" onclick="setFilter('all')">Tutti</button>
+  <button class="filter-chip" data-cat="action figure" onclick="setFilter('action figure')">Action Figure</button>
+  <button class="filter-chip" data-cat="fumetto" onclick="setFilter('fumetto')">Fumetti</button>
+  <button class="filter-chip" data-cat="console" onclick="setFilter('console')">Console</button>
+  <button class="filter-chip" data-cat="altro" onclick="setFilter('altro')">Altro</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="save-toast" id="toast">💾 Salvato</div>
+
+<div class="modal-backdrop" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2>Nuovo oggetto</h2>
+    <div class="modal-field">
+      <label class="modal-label">Nome</label>
+      <input class="modal-input" id="m-nome" placeholder="es. Spider-Man Classic" autofocus>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="modal-field">
+        <label class="modal-label">Produttore</label>
+        <input class="modal-input" id="m-produttore" placeholder="es. Hasbro">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Quantità</label>
+        <input class="modal-input" id="m-qty" type="number" min="1" value="1">
+      </div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Luogo di conservazione</label>
+      <input class="modal-input" id="m-luogo" placeholder="es. Scaffale studio">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Categoria</label>
+      <select class="modal-input" id="m-categoria">
+        <option value="action figure">Action Figure</option>
+        <option value="fumetto">Fumetto</option>
+        <option value="console">Console</option>
+        <option value="altro">Altro</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annulla</button>
+      <button class="btn-confirm" onclick="addItem()">Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="photo-input" accept="image/*" multiple>
+
+<script>
+const STORAGE_KEY = 'collezione_v2';
+let items = [];
+let currentFilter = 'all';
+let pendingPhotoId = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) items = JSON.parse(raw);
+  } catch(e) { items = []; }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  showToast();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+function setFilter(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.cat === cat);
+  });
+  renderItems();
+}
+
+function getFiltered() {
+  const q = document.getElementById('search-input').value.toLowerCase().trim();
+  return items.filter(item => {
+    const matchCat = currentFilter === 'all' || item.categoria === currentFilter;
+    const matchQ = !q || [item.nome, item.produttore, item.luogo, item.categoria].some(f => (f||'').toLowerCase().includes(q));
+    return matchCat && matchQ;
+  });
+}
+
+function renderItems() {
+  const grid = document.getElementById('grid');
+  const filtered = getFiltered();
+  document.getElementById('stats-label').textContent = items.length === 1 ? '1 oggetto' : `${items.length} oggetti`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📦</div>
+      <div class="empty-title">${items.length === 0 ? 'Nessun oggetto ancora' : 'Nessun risultato'}</div>
+      <div class="empty-sub">${items.length === 0 ? 'Aggiungi la prima action figure, fumetto o altro oggetto della tua collezione.' : 'Prova a cambiare la ricerca o il filtro.'}</div>
+      ${items.length === 0 ? `<button class="btn-empty-add" onclick="openModal()">Aggiungi il primo oggetto</button>` : ''}
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => cardHTML(item)).join('');
+
+  filtered.forEach(item => {
+    const scroll = grid.querySelector(`[data-scroll="${item.id}"]`);
+    if (scroll) {
+      scroll.addEventListener('scroll', () => updateDots(item.id));
+    }
+  });
+}
+
+function catLabel(c) {
+  return { 'action figure': 'Action Figure', 'fumetto': 'Fumetto', 'console': 'Console', 'altro': 'Altro' }[c] || c;
+}
+
+function cardHTML(item) {
+  const photos = item.photos || [];
+  const photosHTML = photos.length > 0
+    ? photos.map((p,i) => `<div class="photo-item">
+        <img src="${p}" alt="foto ${i+1}" loading="lazy">
+        <button class="photo-del-btn" onclick="removePhoto('${item.id}',${i})" title="Rimuovi foto">×</button>
+      </div>`).join('')
+    : `<div class="empty-photo"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="2" y="6" width="28" height="22" rx="4" stroke="currentColor" stroke-width="1.5"/><circle cx="22" cy="13" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 22l8-7 6 6 4-3 8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Nessuna foto</span></div>`;
+
+  const dots = photos.length > 1
+    ? `<div class="photo-dots">${photos.map((_,i) => `<div class="photo-dot${i===0?' active':''}" id="dot-${item.id}-${i}"></div>`).join('')}</div>`
+    : '';
+
+  return `<div class="card">
+    <div class="card-photos">
+      <div class="photos-scroll" data-scroll="${item.id}">${photosHTML}</div>
+      ${dots}
+      <span class="category-badge">${catLabel(item.categoria)}</span>
+      <button class="add-photo-btn" onclick="triggerPhoto('${item.id}')" title="Aggiungi foto">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="11" rx="2" stroke="white" stroke-width="1.3"/><circle cx="8" cy="8.5" r="2.5" stroke="white" stroke-width="1.3"/><path d="M6 3l.8-1.5h2.4L10 3" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="card-body">
+      <input class="field-name" value="${esc(item.nome)}" placeholder="Nome oggetto" onchange="updateField('${item.id}','nome',this.value)">
+      <div class="field-row">
+        <span class="field-label">Produttore</span>
+        <input class="field-value" value="${esc(item.produttore)}" placeholder="—" onchange="updateField('${item.id}','produttore',this.value)">
+      </div>
+      <div class="field-row">
+        <span class="field-label">Quantità</span>
+        <input class="field-value field-qty" type="number" min="1" value="${item.qty||1}" onchange="updateField('${item.id}','qty',this.value)">
+      </div>
+      <div class="field-row">
+        <span class="field-label">Posizione</span>
+        <input class="field-value" value="${esc(item.luogo)}" placeholder="—" onchange="updateField('${item.id}','luogo',this.value)">
+      </div>
+    </div>
+    <div class="card-footer">
+      <select class="cat-selector" onchange="updateField('${item.id}','categoria',this.value)">
+        <option value="action figure"${item.categoria==='action figure'?' selected':''}>Action Figure</option>
+        <option value="fumetto"${item.categoria==='fumetto'?' selected':''}>Fumetto</option>
+        <option value="console"${item.categoria==='console'?' selected':''}>Console</option>
+        <option value="altro"${item.categoria==='altro'?' selected':''}>Altro</option>
+      </select>
+      <button class="btn-delete" onclick="deleteItem('${item.id}')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M5 4V3a1 1 0 011-1h2a1 1 0 011 1v1M6 6.5v4M8 6.5v4M3 4l.7 7a1 1 0 001 .9h4.6a1 1 0 001-.9L11 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Elimina
+      </button>
+    </div>
+  </div>`;
+}
+
+function esc(s) {
+  return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateDots(id) {
+  const scroll = document.querySelector(`[data-scroll="${id}"]`);
+  if (!scroll) return;
+  const idx = Math.round(scroll.scrollLeft / scroll.offsetWidth);
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  (item.photos||[]).forEach((_,i) => {
+    const dot = document.getElementById(`dot-${id}-${i}`);
+    if (dot) dot.classList.toggle('active', i === idx);
+  });
+}
+
+function updateField(id, field, val) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  item[field] = val;
+  save();
+  if (field === 'categoria') renderItems();
+}
+
+function deleteItem(id) {
+  if (!confirm('Eliminare questo oggetto?')) return;
+  items = items.filter(i => i.id !== id);
+  save();
+  renderItems();
+}
+
+function triggerPhoto(id) {
+  pendingPhotoId = id;
+  document.getElementById('photo-input').value = '';
+  document.getElementById('photo-input').click();
+}
+
+document.getElementById('photo-input').addEventListener('change', function(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length || !pendingPhotoId) return;
+  const item = items.find(i => i.id === pendingPhotoId);
+  if (!item) return;
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      item.photos = item.photos || [];
+      item.photos.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) { save(); renderItems(); }
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+function removePhoto(id, idx) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  if (!confirm('Rimuovere questa foto?')) return;
+  item.photos.splice(idx, 1);
+  save();
+  renderItems();
+}
+
+function openModal() {
+  document.getElementById('modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('m-nome').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  ['m-nome','m-produttore','m-luogo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-qty').value = 1;
+}
+
+function addItem() {
+  const nome = document.getElementById('m-nome').value.trim();
+  if (!nome) { document.getElementById('m-nome').focus(); return; }
+  const item = {
+    id: uid(),
+    nome,
+    produttore: document.getElementById('m-produttore').value.trim(),
+    qty: parseInt(document.getElementById('m-qty').value) || 1,
+    luogo: document.getElementById('m-luogo').value.trim(),
+    categoria: document.getElementById('m-categoria').value,
+    photos: []
+  };
+  items.unshift(item);
+  save();
+  closeModal();
+  renderItems();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.key === 'Enter') && document.getElementById('modal').style.display !== 'none') {
+    if (document.activeElement.tagName !== 'BUTTON') addItem();
+  }
+});
+
+load();
+renderItems();
+</script>
+</body>
+</html>
